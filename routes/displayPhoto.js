@@ -1,7 +1,7 @@
 const assert = require("assert");
 const fs = require("fs"); //require file system
 const formidable = require("formidable");
-const ExifImage = require('exif').ExifImage;
+const ExifImage = require("exif").ExifImage;
 
 const run = (req, res) => {
 
@@ -13,7 +13,22 @@ const run = (req, res) => {
 		photoDetail.make = exifData.image.Make;
 		photoDetail.model = exifData.image.Model;
 		photoDetail.createDate = exifData.exif.CreateDate;
+		photoDetail.GPSLatitude = convertDMSToDD(exifData.gps.GPSLatitude, exifData.gps.GPSLatitudeRef);
+		photoDetail.GPSLongitude = convertDMSToDD(exifData.gps.GPSLongitude, exifData.gps.GPSLongitudeRef);
 		callback();
+	};
+
+	const convertDMSToDD = (gpsArr, direction) => {
+		let degrees = gpsArr[0];
+		let minutes = gpsArr[1];
+		let seconds = gpsArr[2];
+
+		let dd = degrees + minutes / 60 + seconds / (60 * 60);
+
+		if (direction == "S" || direction == "W") {
+			dd = dd * -1;
+		} // Don't do anything for N or E
+		return dd;
 	};
 
 	form.parse(req, (err, fields, files) => {

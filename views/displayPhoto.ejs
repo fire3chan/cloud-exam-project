@@ -48,7 +48,8 @@
 								<li class="list-group-item">Model: <%= photoDetail.model %></li>
 								<li class="list-group-item">Created on: <%= photoDetail.createDate %></li>
 								<li class="list-group-item">Location:
-									<a href="/map" class="btn btn-primary">Map</a>
+									<a href="/map?lat=<%= photoDetail.GPSLatitude %>&lon=<%= photoDetail.GPSLongitude %>"
+										class="btn btn-primary">Map</a>
 								</li>
 							</ul>
 						</div>
