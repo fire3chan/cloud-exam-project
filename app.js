@@ -17,7 +17,7 @@ app.use("/bootstrap_js", express.static(__dirname + "/node_modules/bootstrap/dis
 // path handling
 app.get("/", uploadPhotoFormPage);
 app.post("/upload", displayPhotoPage);
-app.get("/gmap", showMap);
+app.get("/map", showMap);
 app.get("/message", messagePage);
 
 
