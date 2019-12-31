@@ -5,51 +5,77 @@ const ExifImage = require('exif').ExifImage;
 
 const run = (req, res) => {
 
-	// let form = new formidable.IncomingForm();
+	let form = new formidable.IncomingForm();
 
-	// form.parse(req, (err, fields, files) => {
-	// 	assert.equal(err, null);
+	let photoDetail = {};
 
-	// 	console.log("Fields", fields);
-	// 	let photo = files.photo;
-	// 	console.log(photo);
-	// 	let filename = photo.path;
+	const processExifData = (exifData, callback) => {
+		photoDetail.make = exifData.image.Make;
+		photoDetail.model = exifData.image.Model;
+		photoDetail.createDate = exifData.exif.CreateDate;
+		callback();
+	};
 
-	// 	if (photo.size === 0) {
-	// 		console.log("No file");
-	// 		res.render("message.ejs", {
-	// 			message: "No file uploaded!",
-	// 			buttonLink: "Back",
-	// 			buttonText: "Back"
-	// 		});
-	// 		res.end();
-	// 		return;
-	// 	}
+	form.parse(req, (err, fields, files) => {
+		assert.equal(err, null);
 
-	// 	if (photo.type) {
-	// 		//check upload file is image
-	// 		if (!photo.type.match(/^image/)) {
-	// 			res.render("message.ejs", {
-	// 				message: "Upload file is not image!",
-	// 				buttonLink: "Back",
-	// 				buttonText: "Back"
-	// 			});
-	// 			res.end();
-	// 			return;
-	// 		}
-	// 		photo["photo_mimetype"] = photo.type;
-	// 	}
+		photoDetail.title = fields.title;
+		photoDetail.description = fields.description;
 
-	// 	fs.readFile(filename, (err, data) => {
-	// 		assert.equal(err, null);
-	// 		photo["photo"] = new Buffer.from(data).toString("base64");
-	// 		res.render("displayPhoto.ejs", { photo: photo });
-	// 		res.end();
-	// 	});
+		let photo = files.photo;
+		let filename = photo.path;
 
-	// });
-	res.render("displayPhoto.ejs");
-	res.end();
+		if (photo.size === 0) {
+			res.render("message.ejs", {
+				message: "No file uploaded!",
+				buttonLink: "Back",
+				buttonText: "Back"
+			});
+			res.end();
+			return;
+		}
+
+		if (photo.type) {
+			//check upload file is image
+			if (!photo.type.match(/^image/)) {
+				res.render("message.ejs", {
+					message: "Upload file is not image!",
+					buttonLink: "Back",
+					buttonText: "Back"
+				});
+				res.end();
+				return;
+			}
+			photoDetail.photo_mimetype = photo.type;
+		}
+
+		fs.readFile(filename, (err, data) => {
+			assert.equal(err, null);
+			photoDetail.photo = new Buffer.from(data).toString("base64");
+
+			try {
+				new ExifImage({ image: filename }, (error, exifData) => {
+					if (error) {
+						console.log("Error: " + error.message);
+					}
+					else {
+						console.log(exifData);
+
+						processExifData(exifData, () => {
+							res.render("displayPhoto.ejs", { photoDetail: photoDetail });
+							res.end();
+						});
+
+					}
+				});
+			} catch (error) {
+				console.log("Error: " + error.message);
+			}
+
+
+		});
+
+	});
 }
 
 
