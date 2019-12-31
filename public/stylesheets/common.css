@@ -1,0 +1,33 @@
+body {
+    background-color: #f9f9f9;
+}
+
+.logo-ctn {
+    padding: 1em;
+}
+
+.logo-link {
+    display: flex;
+    color: black;
+}
+
+.logo-link:hover {
+    text-decoration: none;
+    color: black;
+}
+
+.logo {
+    width: 3em;
+}
+
+.logo-text {
+    font-size: 2em;
+}
+
+.header {
+    margin: 0.5em 0;
+}
+
+.header-bar {
+    background-color: #eaeaea;
+}

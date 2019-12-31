@@ -1,0 +1,26 @@
+{
+  "name": "exam-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fire3chan/cloud-exam-project.git"
+  },
+  "author": "Fire Chan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fire3chan/cloud-exam-project/issues"
+  },
+  "homepage": "https://github.com/fire3chan/cloud-exam-project#readme",
+  "dependencies": {
+    "bootstrap": "^4.3.1",
+    "ejs": "^2.7.2",
+    "exif": "^0.6.0",
+    "express": "^4.17.1",
+    "formidable": "^1.2.1"
+  }
+}
