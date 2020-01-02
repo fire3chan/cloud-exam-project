@@ -9,26 +9,42 @@ const run = (req, res) => {
 
 	let photoDetail = {};
 
+	const isEmpty = (aVar) => {
+		if (aVar !== null && aVar !== "" && aVar !== undefined) {
+			return false;
+		}
+		return true;
+	}
 	const processExifData = (exifData, callback) => {
-		photoDetail.make = exifData.image.Make;
-		photoDetail.model = exifData.image.Model;
-		photoDetail.createDate = exifData.exif.CreateDate;
-		photoDetail.GPSLatitude = convertDMSToDD(exifData.gps.GPSLatitude, exifData.gps.GPSLatitudeRef);
-		photoDetail.GPSLongitude = convertDMSToDD(exifData.gps.GPSLongitude, exifData.gps.GPSLongitudeRef);
-		callback();
+		if (isEmpty(exifData)) {
+			callback(true);
+		} else {
+			photoDetail.make = isEmpty(exifData.image.Make) ? undefined : exifData.image.Make;
+			photoDetail.model = isEmpty(exifData.image.Model) ? undefined : exifData.image.Model;
+			photoDetail.createDate = isEmpty(exifData.exif.CreateDate) ? undefined : exifData.exif.CreateDate;
+
+			photoDetail.GPSLatitude = convertDMSToDD(exifData.gps.GPSLatitude, exifData.gps.GPSLatitudeRef);
+			photoDetail.GPSLongitude = convertDMSToDD(exifData.gps.GPSLongitude, exifData.gps.GPSLongitudeRef);
+			callback(false);
+		}
+
 	};
 
 	const convertDMSToDD = (gpsArr, direction) => {
-		let degrees = gpsArr[0];
-		let minutes = gpsArr[1];
-		let seconds = gpsArr[2];
+		if (gpsArr !== null && gpsArr !== "" && gpsArr !== undefined && gpsArr.length !== 0) {
+			let degrees = gpsArr[0];
+			let minutes = gpsArr[1];
+			let seconds = gpsArr[2];
 
-		let dd = degrees + minutes / 60 + seconds / (60 * 60);
+			let dd = degrees + minutes / 60 + seconds / (60 * 60);
 
-		if (direction == "S" || direction == "W") {
-			dd = dd * -1;
-		} // Don't do anything for N or E
-		return dd;
+			if (direction == "S" || direction == "W") {
+				dd = dd * -1;
+			} // Don't do anything for N or E
+			return dd;
+		}
+		return undefined;
+
 	};
 
 	form.parse(req, (err, fields, files) => {
@@ -71,20 +87,23 @@ const run = (req, res) => {
 			try {
 				new ExifImage({ image: filename }, (error, exifData) => {
 					if (error) {
-						console.log("Error: " + error.message);
-					}
-					else {
-						console.log(exifData);
+						console.log("Error: 1" + error.message);
 
-						processExifData(exifData, () => {
-							res.render("displayPhoto.ejs", { photoDetail: photoDetail });
+					}
+					processExifData(exifData, (noExif) => {
+						if (noExif) {
+							res.render("displayPhoto.ejs", { photoDetail: photoDetail, noExif: true });
 							res.end();
-						});
+						} else {
+							res.render("displayPhoto.ejs", { photoDetail: photoDetail, noExif: false });
+							res.end();
+						}
 
-					}
+					});
+
 				});
 			} catch (error) {
-				console.log("Error: " + error.message);
+				console.log("Error: 2" + error.message);
 			}
 
 
