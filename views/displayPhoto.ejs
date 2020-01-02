@@ -7,9 +7,14 @@
 	<title>Detail of photo</title>
 	<link rel="stylesheet" href="/bootstrap_css/bootstrap.css" />
 	<link rel="stylesheet" href="/stylesheets/common.css" />
-	<link rel="stylesheet" href="/stylesheets/displayPhoto.css" />
 
 </head>
+<% const isEmpty = (aVar) => {
+	if (aVar !== null && aVar !== "" && aVar !== undefined) {
+		return false;
+	}
+	return true;
+} %>
 
 <body>
 	<div class="header-bar">
@@ -29,11 +34,21 @@
 		<div class="row">
 			<div class="col-12">
 				<h1 class="mt-3 mb-3">
-					<%=photoDetail.title%>
+					<% if (!isEmpty(photoDetail.title)) { %>
+					<%= photoDetail.title %>
+					<% } else { %>
+					<div>Untitled</div>
+					<% } %>
 				</h1>
 			</div>
 			<div class="col-12">
-				<h2 class="mt-2 mb-4"><%=photoDetail.description%></h2>
+				<h2 class="mt-2 mb-4">
+					<% if (!isEmpty(photoDetail.description)) { %>
+					<%= photoDetail.description %>
+					<% } else { %>
+					<div>No description</div>
+					<% } %>
+				</h2>
 			</div>
 			<div class="col-12">
 				<div class="row mb-4">
@@ -43,15 +58,45 @@
 					</div>
 					<div class="col-12 col-md-5">
 						<div class="card">
+							<% if (noExif) { %>
+							<div class="p-1">No exif data</div>
+							<% } else { %>
 							<ul class="list-group list-group-flush">
-								<li class="list-group-item">Make: <%= photoDetail.make %></li>
-								<li class="list-group-item">Model: <%= photoDetail.model %></li>
-								<li class="list-group-item">Created on: <%= photoDetail.createDate %></li>
-								<li class="list-group-item">Location:
+								<li class="list-group-item">
+									Make:
+									<% if (!isEmpty(photoDetail.make)) { %>
+									<%= photoDetail.make %>
+									<% } else { %>
+									<div>No info</div>
+									<% } %>
+								</li>
+								<li class="list-group-item">
+									Model:
+									<% if (!isEmpty(photoDetail.model)) { %>
+									<%= photoDetail.model %>
+									<% } else { %>
+									<div>No info</div>
+									<% } %>
+								</li>
+								<li class="list-group-item">
+									Created on:
+									<% if (!isEmpty(photoDetail.createDate)) { %>
+									<%= photoDetail.createDate %>
+									<% } else { %>
+									<div>No info</div>
+									<% } %>
+								</li>
+								<li class="list-group-item">
+									Location:
+									<% if (photoDetail.GPSLatitude !== undefined && photoDetail.GPSLongitude !== undefined) {%>
 									<a href="/map?lat=<%= photoDetail.GPSLatitude %>&lon=<%= photoDetail.GPSLongitude %>"
 										class="btn btn-primary">Map</a>
+									<% } else { %>
+									<div>No location info</div>
+									<% } %>
 								</li>
 							</ul>
+							<% } %>
 						</div>
 
 					</div>
